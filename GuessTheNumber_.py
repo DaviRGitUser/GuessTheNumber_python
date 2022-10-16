@@ -3,19 +3,10 @@
 from random import randint
 from time import sleep
 
-# Definir o método __init__ como aceptor de qualquer comando
-''' Variável de classe responsável por armazenar o valor da pontuação por sessão
-                      À partir do momento em que o usuário digitar o valor inicial, tornam-se possíveis três POSSIBILIDADES: 
-                       - Possibilidade de início de jogo
-                       - Possibilidade de login, com a inserção do nome de usuário e 'criação de um perfil'
-                                - Classe tem de ser iniciada novamente, fazendo com que o usuário insira seu nome no campo
-                                
-                       '''
-
-
 class GameCore:
 
     total_score = 0
+    a = 0
 
     def __init__(self, name=None):  # Definições básicas -- Atributos necessários para execução
         self.name = name
@@ -29,26 +20,78 @@ class GameCore:
             print('Running on anonymous mode;\ntype: /login {} to register\n{}'.format('"username"', '-' * 20))
 # region CORE
 
-    def show_menuActions(self,):
-        print('- Alterar nome de usuário: /login "username"\n'
+    def show_menuActions(self):
+        print(' MAIN MENU '.center(40, '-'),
+              '\n- Alterar nome de usuário: /login "username"\n'
               '- Alterar dificuldade: /difficulty "easy", "medium", "hard"\n'
-              '- Voltar: /resume\n')
-        self.command = str(input('{}@command> '.format(str(self.name).lower())))
+              '- Voltar: /resume \n'
+              '- Exit: /quit')
+        self.command = str(input('{}@command_central> '.format(str(self.name).lower())))
+
+        self.dfclt = {'easy': 3,
+                      'medium': 5,
+                       'hard': 7}
+
+        if self.command == '/quit':
+            exit()
+        elif self.command == '/resume':
+            return None
+        elif str(self.command).strip()[0:6] == '/login' and self.command[7:] != '':
+            self.name = self.command[7:].replace(' ', '')
+
+            sleep(0.5)
+            print('{}\nBem vindo(a), {}!\n{}'.format('-' * 20, self.name, '-' * 20))
+            sleep(0.5)
+
+            return self.show_menuActions()
+        elif self.command[:11] == '/difficulty' and self.command[11:].replace(' ', '') is not '':
+
+            def acessesto():
+                GameCore.a += 1
+            acessesto()
+
+            print('Valor alterado com sucesso! Mudanças serão aplicadas na próxima partida.')
+            return None
+
+
+        else:
+            return None
 
     def choice(self, difficulty=3):  # Armazena o número jogado pelo usuário
-        self.user = input('Digite o número que pretende jogar: ')
-        self.max = difficulty# Variável que armazena a dificuldade (definida pela quantidade de algarismos que podem ser sorteados pela cpu) de jogo
-        try:
-            self.user = int(self.user)
-            if self.user in range(1, self.max + 1):
-                pass
-            else:
-                self.choice()
-        except:
-            if self.user not in ['/login', '/menu']:
-                self.choice()
-            else:
+        if GameCore.a > 0:
+            self.max = self.dfclt[self.command[11:].replace(' ', '')]
+        else:
+            self.max = difficulty
+        self.user = None # Variável que armazena a dificuldade (definida pela quantidade de algarismos que podem ser sorteados pela cpu) de jogo
+
+        def check():
+
+            def verify():
+                while True:
+                    self.user = input(f'Digite o número que pretende jogar [1-{self.max}]: ')
+                    if str(self.user).isnumeric() is True and int(self.user) in range(1, self.max + 1):
+                        self.user = int(self.user)
+                        break
+
+                    elif str(self.user).lower() in ['/menu'] and str(self.user) is not '' and self.user is not None:
+                        self.show_menuActions()
+
+                    else:
+                        print('Digite um valor válido!')
+
+            if str(self.user).isnumeric() is True:
+                if int(self.user) in range(1, self.max + 1):
+                    pass
+                else:
+                    verify()
+            elif str(self.user).lower() in ['/login', '/menu']:
                 self.show_menuActions()
+                if self.show_menuActions() is None:
+                    verify()
+
+            else:
+                verify()
+        check()
 
     def analyse(self):
         print(' SORTEANDO '.center(21, '-'))
@@ -61,7 +104,7 @@ class GameCore:
             elif x is not self.cpu:
                 print(x, end='')
         print('')
-        if self.user == self.cpu:
+        if int(self.user) == self.cpu:  # Verificação de respostas
             print('{}Certa resposta!{}'.format('\033[1;34m', '\033[m'))
 
             def score():
@@ -73,7 +116,9 @@ class GameCore:
             print('{}Resposta Errada!{}'.format("\033[1;31m", "\033[m"))
 
             def score():
+
                 return 0
+
             self.tot = score()
 
         GameCore.total_score += self.tot
@@ -81,6 +126,7 @@ class GameCore:
     def terminate(self):
         print(f'Pontuação total nesta sessão: {GameCore.total_score} \n{" ^^^ ".center(21, "-")}')
 # endregion
+
     def start(self, mode=None):
         print('Starting!')
         print('type /menu to access the options')
@@ -97,5 +143,5 @@ class GameCore:
 
 
 # Aplicação da classe ---
-GameInstanceOne = GameCore('PintoJosé')
+GameInstanceOne = GameCore("DaviR")
 GameInstanceOne.start('semFim=True')
