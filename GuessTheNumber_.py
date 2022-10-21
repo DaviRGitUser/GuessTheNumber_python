@@ -3,12 +3,13 @@
 from random import randint
 from time import sleep
 
+
 class GameCore:
 
-    total_score = 0
     a = 0
 
     def __init__(self, name=None):  # Definições básicas -- Atributos necessários para execução
+        self.total_score = 0
         self.name = name
         print('Este é o GuessTheNumber!')
 
@@ -17,7 +18,7 @@ class GameCore:
             print('{}\nBem vindo(a), {}!\n{}'.format('-' * 20, name, '-' * 20))
             sleep(0.5)
         else:
-            print('Running on anonymous mode;\ntype: /login {} to register\n{}'.format('"username"', '-' * 20))
+            print('Running on anonymous mode;\ntype: /menu to acess the options\n{}'.format('-' * 20))
 # region CORE
 
     def show_menuActions(self):
@@ -121,10 +122,10 @@ class GameCore:
 
             self.tot = score()
 
-        GameCore.total_score += self.tot
+        self.total_score += self.tot
 
     def terminate(self):
-        print(f'Pontuação total nesta sessão: {GameCore.total_score} \n{" ^^^ ".center(21, "-")}')
+        print(f'Pontuação total nesta sessão: {self.total_score} \n{" ^^^ ".center(21, "-")}')
 # endregion
 
     def start(self, mode=None):
@@ -143,5 +144,7 @@ class GameCore:
 
 
 # Aplicação da classe ---
-GameInstanceOne = GameCore("DaviR")
-GameInstanceOne.start('semFim=True')
+GameInstanceOne = GameCore('DaviR')
+GameInstanceOne.start()
+
+
